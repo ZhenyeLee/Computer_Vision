@@ -1,0 +1,41 @@
+function output_img = recognizeObjects(orig_img, labeled_img, obj_db)
+    num_obj = max(labeled_img(:));
+    num_samples = size(obj_db,2);
+    %Can adjust the threshold
+    threshold = 0.2;
+    [test_db,test_out] = compute2DProperties(orig_img,labeled_img);
+    figure;
+    imshow(orig_img);
+    hold on;
+    for i = 1:num_obj
+        properties = test_db(:,i)*ones(1,num_samples);
+        diff = abs(properties([4,6],:) - obj_db([4,6],:));
+        %tmp = sum(diff,2)*ones(1,num_obj);
+        diff = min((diff./obj_db([4,6],:))');
+        if(diff(1) < 0.15 && diff(2) < 0.1)
+            
+            x_delta = (50*cos(my_obj_db(5,j)));
+            y_delta = (50*sin(my_obj_db(5,j)));
+            x1 = my_obj_db(2,j)+x_delta;
+            x2 = my_obj_db(2,j)-x_delta;
+            y1 = my_obj_db(3,j)+y_delta;
+            y2 = my_obj_db(3,j)-y_delta;
+            hold on;
+            plot([x1 x2],[y1 y2], "Linewidth",1);
+            
+            
+            
+            % draw the center and the orientation;
+            instance = test_db(:,i);
+            meanx = instance(2);
+            meany = instance(3);
+            theta = instance(5);
+            slope = tan(-theta/180*pi);
+            plot(meanx,meany,'ws', 'MarkerFaceColor', [1 0 0]);
+            xx = [-30:30]+meanx;
+            yy = slope*(xx - meanx)+meany;
+            plot(xx,yy, "Linewidth",1.5);
+            hold on;
+        end
+    end
+    output_img=imresize(print('-RGBImage'),size(orig_img));
